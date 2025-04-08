@@ -66,16 +66,21 @@ class PostController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Post $post)
+    public function show($id)
     {
         try {
             // Load any necessary relationships
-            $post->load('user');
+            $post = Post::with('user')->find($id);
+
+            if (!$post) {
+                return ApiResponseService::error(
+                    'Post not found',
+                    404
+                );
+            }
 
             return ApiResponseService::success(
-                [
-                    'post' => PostResource::make($post),
-                ],
+                ['post' => PostResource::make($post)],
                 'Post retrieved successfully',
                 200
             );
@@ -83,8 +88,7 @@ class PostController extends Controller
             Log::error('Post Show Error: ' . $e->getMessage());
             return ApiResponseService::error(
                 'Failed to retrieve post',
-                500
-            );
+                500);
         }
     }
 
