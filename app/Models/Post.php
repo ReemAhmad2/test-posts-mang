@@ -12,9 +12,12 @@ class Post extends Model
         'user_id'
     ];
 
-    protected $casts = [
-        'title' => 'string',
-        'content' => 'string',
-        'user_id' => 'integer'
-    ];
+    protected function casts(): array
+    {
+        return [
+            'title' => 'string',
+            'content' => 'string',
+            'user_id' => 'integer'
+        ];
+    }
 }
