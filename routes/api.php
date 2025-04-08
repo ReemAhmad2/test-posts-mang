@@ -18,5 +18,6 @@ Route::middleware('auth:sanctum')->group(function (){
     // Post
     Route::post('/post/add', [PostController::class, 'store']);
     Route::get('/post/all', [PostController::class, 'index']);
+    Route::get('/post/show/{post}', [PostController::class, 'show']);
 
 });

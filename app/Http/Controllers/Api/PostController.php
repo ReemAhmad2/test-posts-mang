@@ -68,7 +68,24 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        //
+        try {
+            // Load any necessary relationships
+            $post->load('user');
+
+            return ApiResponseService::success(
+                [
+                    'post' => PostResource::make($post),
+                ],
+                'Post retrieved successfully',
+                200
+            );
+        } catch (\Exception $e) {
+            Log::error('Post Show Error: ' . $e->getMessage());
+            return ApiResponseService::error(
+                'Failed to retrieve post',
+                500
+            );
+        }
     }
 
     /**
