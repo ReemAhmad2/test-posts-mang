@@ -80,4 +80,50 @@ class AuthController extends Controller
             );
         }
     }
+
+    // Logout
+    public function logout(Request $request)
+    {
+        try {
+            // Revoke the current user's token
+            $request->user()->currentAccessToken()->delete();
+
+            return ApiResponseService::success(
+                null,
+                'Successfully logged out',
+                200
+            );
+        } catch (\Exception $e) {
+            Log::error('Logout Error: ' . $e->getMessage());
+            return ApiResponseService::error(
+                'Logout failed. Please try again.',
+                500
+            );
+        }
+    }
+
+    // get user auth
+    public function user(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            if (!$user) {
+                return ApiResponseService::error('User not authenticated', 401);
+            }
+
+            return ApiResponseService::success([
+                    'user' => UserResource::make($user)
+                ],
+                'User data retrieved successfully',
+                200
+            );
+        } catch (\Exception $e) {
+            Log::error('User Data Error: ' . $e->getMessage());
+            return ApiResponseService::error(
+                'Failed to retrieve user data',
+                500, null
+            );
+        }
+    }
 }
