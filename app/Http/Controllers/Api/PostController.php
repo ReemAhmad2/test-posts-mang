@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PostRequest;
 use App\Services\ApiResponseService;
 use Illuminate\Support\Facades\Log;
+use App\Http\Resources\PostResource;
 
 class PostController extends Controller
 {
@@ -16,7 +17,23 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        try {
+            $posts = Post::paginate(8);
+            return ApiResponseService::success(
+                [
+                    'posts' => PostResource::collection($posts),
+                ],
+                'get all posts successfully',
+                200
+            );
+
+        } catch (\Exception $e) {
+            Log::error('User Data Error: ' . $e->getMessage());
+            return ApiResponseService::error(
+                'Failed to get all posts',
+                500, null
+            );
+        }
     }
 
     /**
@@ -32,7 +49,7 @@ class PostController extends Controller
             ]);
             return ApiResponseService::success(
                 [
-                    'post' => $post,
+                    'post' => PostResource::make($post),
                 ],
                 'Post add successful',
                 201
