@@ -130,10 +130,38 @@ class PostController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified post from storage.
      */
-    public function destroy(Post $post)
+    public function destroy($id)
     {
-        //
+        try {
+            $post = Post::find($id);
+            if (!$post) {
+                return ApiResponseService::error(
+                    'Post not found',
+                    404
+                );
+            }
+
+            if ($post->user_id !== auth()->user()->id) {
+                return ApiResponseService::error(
+                    'Unauthorized: You can only delete your own posts',
+                    403
+                );
+            }
+            $post->delete();
+
+            return ApiResponseService::success(
+                null,
+                'Post deleted successfully',
+                200
+            );
+        } catch (\Exception $e) {
+            Log::error('Post Delete Error: ' . $e->getMessage());
+            return ApiResponseService::error(
+                'Failed to delete post',
+                500
+            );
+        }
     }
 }
