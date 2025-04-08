@@ -17,7 +17,6 @@ class Post extends Model
         return [
             'title' => 'string',
             'content' => 'string',
-            'user_id' => 'integer'
         ];
     }
 }
