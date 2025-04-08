@@ -88,16 +88,45 @@ class PostController extends Controller
             Log::error('Post Show Error: ' . $e->getMessage());
             return ApiResponseService::error(
                 'Failed to retrieve post',
-                500);
+                500
+            );
         }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Post $post)
+    public function update(PostRequest $request, $id)
     {
-        //
+        try {
+            $post = Post::with('user')->find($id);
+            if (!$post) {
+                return ApiResponseService::error(
+                    'Post not found',
+                    404
+                );
+            }
+
+            if ($post->user_id !== $request->user()->id) {
+                return ApiResponseService::error(
+                    'Unauthorized: You can only update your own posts',
+                    403
+                );
+            }
+
+            $post->update($request->validated());
+            return ApiResponseService::success(
+                ['post' => PostResource::make($post)],
+                'Post updated successfully',
+                200
+            );
+        } catch (\Exception $e) {
+            Log::error('Post Update Error: ' . $e->getMessage());
+            return ApiResponseService::error(
+                'Failed to update post',
+                500
+            );
+        }
     }
 
     /**
