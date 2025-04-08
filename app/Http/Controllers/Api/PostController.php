@@ -18,20 +18,19 @@ class PostController extends Controller
     public function index()
     {
         try {
-            $posts = Post::paginate(8);
-            return ApiResponseService::success(
-                [
-                    'posts' => PostResource::collection($posts),
-                ],
+            $posts = Post::with('user')->paginate(5);
+            return ApiResponseService::paginated(
+                $posts,
+                PostResource::class,
                 'get all posts successfully',
                 200
             );
-
         } catch (\Exception $e) {
             Log::error('User Data Error: ' . $e->getMessage());
             return ApiResponseService::error(
                 'Failed to get all posts',
-                500, null
+                500,
+                null
             );
         }
     }
@@ -54,15 +53,14 @@ class PostController extends Controller
                 'Post add successful',
                 201
             );
-
         } catch (\Exception $e) {
             Log::error('User Data Error: ' . $e->getMessage());
             return ApiResponseService::error(
                 'Failed to add post',
-                500, null
+                500,
+                null
             );
         }
-
     }
 
     /**

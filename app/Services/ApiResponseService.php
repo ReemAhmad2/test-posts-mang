@@ -56,23 +56,20 @@ class ApiResponseService
      * @param int $status The HTTP status code.
      * @return \Illuminate\Http\JsonResponse The JSON response.
      */
-    public static function paginated(LengthAwarePaginator $paginator, $message = 'Operation successful', $status = 200)
-    {
 
-        return response()->json(
-            [
-                'status' => 'success',
-                'message' => trans($message),
-                'data' => $paginator->items(),
-                'pagination' => [
-                    'total' => $paginator->total(),
-                    'count' => $paginator->count(),
-                    'per_page' => $paginator->perPage(),
-                    'current_page' => $paginator->currentPage(),
-                    'total_pages' => $paginator->lastPage(),
-                ],
+    public static function paginated(LengthAwarePaginator $paginator, $resourceClass, $message = 'Operation successful', $status = 200)
+    {
+        return response()->json([
+            'status' => 'success',
+            'message' => trans($message),
+            'data' => $resourceClass::collection($paginator->items()),
+            'pagination' => [
+                'total' => $paginator->total(),
+                'count' => $paginator->count(),
+                'per_page' => $paginator->perPage(),
+                'current_page' => $paginator->currentPage(),
+                'total_pages' => $paginator->lastPage(),
             ],
-            $status
-        );
+        ], $status);
     }
 }
